@@ -7,6 +7,7 @@
   <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
 
+
   <name>ArchtectCalculator</name>
   <url>http://maven.apache.org</url>
 
@@ -21,5 +22,32 @@
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
+
+      <!-- Source: https://mvnrepository.com/artifact/com.googlecode.lanterna/lanterna -->
+      <dependency>
+          <groupId>com.googlecode.lanterna</groupId>
+          <artifactId>lanterna</artifactId>
+          <version>3.1.5</version>
+          <scope>compile</scope>
+      </dependency>
+
   </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>almeida.murilo.ArchitectApp</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>
