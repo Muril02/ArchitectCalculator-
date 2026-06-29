@@ -1,5 +1,7 @@
 package almeida.murilo;
 
+import almeida.murilo.Windows.WindowsController;
+import almeida.murilo.Windows.WindowsModel;
 import com.googlecode.lanterna.*;
 import com.googlecode.lanterna.graphics.BasicTextImage;
 import com.googlecode.lanterna.graphics.TextGraphics;
@@ -20,6 +22,7 @@ public class ArchitectApp {
 
         try(Screen screen = new DefaultTerminalFactory().createScreen()) {
             TextGraphics textgh = screen.newTextGraphics();
+            WindowsController wm = new WindowsController();
             screen.startScreen();
 
             MultiWindowTextGUI gui = new MultiWindowTextGUI(screen);
@@ -44,8 +47,8 @@ public class ArchitectApp {
 
             window.setComponent(pnBtnTxtBox);
 
-            gui.addWindowAndWait(message);
-            gui.addWindow(window);
+            gui.addWindowAndWait(wm.getStartupPage());
+
             gui.updateScreen();
 
 
