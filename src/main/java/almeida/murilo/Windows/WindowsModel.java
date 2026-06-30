@@ -14,9 +14,7 @@ public class WindowsModel {
         ph.addComponent(new AnimatedLabel("/").addFrame("|").addFrame("\\").addFrame("-").startAnimation(100));
         ph.addComponent(2, new Label("Escolha a opção que deseja"));
         ph.addComponent(1, new EmptySpace());
-        ph.addComponent(new MenuItem("Calcular telhado", () -> {
-
-        }));
+        ph.addComponent(new MenuItem("Calcular telhado", wm::getCalcTelhado));
         ph.addComponent(new MenuItem("asdas"));
         ph.addComponent(new MenuItem("asdasdasd"));
 
