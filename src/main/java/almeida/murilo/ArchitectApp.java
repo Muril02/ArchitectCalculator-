@@ -1,23 +1,12 @@
 package almeida.murilo;
 
-import almeida.murilo.Windows.WindowsController;
-import almeida.murilo.Windows.WindowsModel;
-import com.googlecode.lanterna.*;
-import com.googlecode.lanterna.graphics.BasicTextImage;
+import almeida.murilo.Windows.Windows;
 import com.googlecode.lanterna.graphics.TextGraphics;
-import com.googlecode.lanterna.graphics.TextImage;
 import com.googlecode.lanterna.gui2.*;
-import com.googlecode.lanterna.gui2.dialogs.*;
-import com.googlecode.lanterna.gui2.menu.Menu;import com.googlecode.lanterna.gui2.menu.MenuBar;import com.googlecode.lanterna.gui2.menu.MenuItem;
-import com.googlecode.lanterna.input.KeyStroke;
-import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
-import com.googlecode.lanterna.terminal.Terminal;
 
-import java.awt.event.WindowAdapter;
-import java.io.IOException;import java.sql.SQLOutput;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.io.IOException;
 
 import static com.googlecode.lanterna.TextCharacter.fromCharacter;
 
@@ -26,21 +15,23 @@ public class ArchitectApp {
 
         try(Screen screen = new DefaultTerminalFactory().createScreen()) {
             TextGraphics textgh = screen.newTextGraphics();
-            WindowsController wm = new WindowsController();
             screen.startScreen();
 
             MultiWindowTextGUI gui = new MultiWindowTextGUI(screen);
 
+            Windows wm = new Windows(gui);
+
             WindowListenerAdapter listener = new WindowListenerAdapter();
 
-            BasicWindow stUp = wm.getStartupPage();
+            BasicWindow stUp = wm.startupWindow();
             stUp.addWindowListener(listener);
 
             gui.addWindowAndWait(stUp);
-
-
             gui.updateScreen();
 
+            while(gui.getWindows().size() > 1){
+
+            }
 
 
         } catch (IOException e) {
