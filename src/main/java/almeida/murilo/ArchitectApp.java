@@ -29,11 +29,6 @@ public class ArchitectApp {
             gui.addWindowAndWait(stUp);
             gui.updateScreen();
 
-            while(gui.getWindows().size() > 1){
-
-            }
-
-
         } catch (IOException e) {
             System.out.println("Error: " + e.getMessage());
         }
