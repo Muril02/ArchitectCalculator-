@@ -2,12 +2,14 @@ package almeida.murilo.Windows;
 
 import almeida.murilo.Calculos.Calculos;
 import com.googlecode.lanterna.gui2.*;
+import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
+import com.googlecode.lanterna.gui2.dialogs.MessageDialog;
+import com.googlecode.lanterna.gui2.dialogs.MessageDialogBuilder;
 import com.googlecode.lanterna.gui2.menu.MenuItem;
-import jdk.internal.util.xml.impl.Input;
-import org.w3c.dom.Text;
+import com.googlecode.lanterna.input.KeyStroke;
+import com.googlecode.lanterna.input.KeyType;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 
 public class Windows {
 
@@ -41,9 +43,21 @@ public class Windows {
 
     public BasicWindow calcTelhadoWindow(MultiWindowTextGUI gui){
         BasicWindow window = new BasicWindow();
+        MessageDialog errWindow = new MessageDialogBuilder().setTitle("Erro").setText("Valores inválidos!").build();
         Panel ph = new Panel();
-        TextBox inc = new TextBox();
-        TextBox larg = new TextBox();
+        InputFilter textFilter = new InputFilter() {
+            @Override
+            public boolean onInput(Interactable interactable, KeyStroke keyStroke) {
+                try{
+                    return !keyStroke.getKeyType().equals(KeyType.Character) || keyStroke.getCharacter().equals('.') || Character.isDigit(keyStroke.getCharacter());
+                }catch(Exception e){
+                    System.out.println("Erro" + e.getMessage());
+                }
+                return false;
+            }
+        };
+        TextBox inc = new TextBox().setInputFilter(textFilter);
+        TextBox larg = new TextBox().setInputFilter(textFilter);
         Label lblResult = new Label("");
 
         ph.addComponent(new Label("Calculadora de telhados!"));
@@ -55,11 +69,18 @@ public class Windows {
         ph.addComponent(6, new Label("Resultado:"));
         ph.addComponent(7, lblResult);
         ph.addComponent(5, new MenuItem("Calcular", ()->{
-            BigDecimal incVal = new BigDecimal(inc.getText());
-            BigDecimal larVal = new BigDecimal(larg.getText());
+            BigDecimal incVal = new BigDecimal(inc.getTextOrDefault("0"));
+            BigDecimal larVal = new BigDecimal(larg.getTextOrDefault("0"));
 
-            lblResult.setText(Calculos.calcTelhados(incVal, larVal).toString());
-
+            try{
+                if(incVal.compareTo(BigDecimal.ZERO) == 0 || larVal.compareTo(BigDecimal.ZERO) == 0){
+                    gui.addWindow(errWindow).setActiveWindow(errWindow).updateScreen();
+                }else {
+                    lblResult.setText(Calculos.calcTelhados(incVal, larVal).toString());
+                }
+            }catch(Exception e){
+                System.out.println("Erro" + e.getMessage());
+            }
         }));
 
         ph.addComponent(8, new MenuItem("Fechar", ()->{
