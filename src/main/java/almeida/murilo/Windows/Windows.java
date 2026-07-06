@@ -1,6 +1,8 @@
 package almeida.murilo.Windows;
 
 import almeida.murilo.Calculos.Calculos;
+import com.googlecode.lanterna.SGR;
+import com.googlecode.lanterna.graphics.ThemeDefinition;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
 import com.googlecode.lanterna.gui2.dialogs.MessageDialog;
@@ -10,6 +12,7 @@ import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 
 import java.math.BigDecimal;
+import java.util.Set;
 
 public class Windows {
 
@@ -23,11 +26,12 @@ public class Windows {
         BasicWindow window = new BasicWindow();
         Panel ph = new Panel();
 
+
         ph.addComponent(new Label("Seja bem vindo ao Architect Calculator!"));
         ph.addComponent(new AnimatedLabel("/").addFrame("|").addFrame("\\").addFrame("-").startAnimation(100));
         ph.addComponent(2, new Label("Escolha a opção que deseja"));
         ph.addComponent(1, new EmptySpace());
-        ph.addComponent(new MenuItem("Calcular telhado", () -> {
+        ph.addComponent(new MenuItem("1 - Calcular telhado", () -> {
             try{
                 BasicWindow w = calcTelhadoWindow(this.gui);
                 this.gui.getActiveWindow().setVisible(false);
@@ -43,8 +47,14 @@ public class Windows {
 
     public BasicWindow calcTelhadoWindow(MultiWindowTextGUI gui){
         BasicWindow window = new BasicWindow();
+        window.setHints(Set.of(
+                Window.Hint.CENTERED
+        ));
         MessageDialog errWindow = new MessageDialogBuilder().setTitle("Erro").setText("Valores inválidos!").build();
-        Panel ph = new Panel();
+        errWindow.setHints(Set.of(
+                Window.Hint.MENU_POPUP
+        ));
+        Panel ph = new Panel(new LinearLayout(Direction.VERTICAL));
         InputFilter textFilter = new InputFilter() {
             @Override
             public boolean onInput(Interactable interactable, KeyStroke keyStroke) {
@@ -90,7 +100,6 @@ public class Windows {
 
         window.setComponent(ph);
         return window;
-
     }
 
 

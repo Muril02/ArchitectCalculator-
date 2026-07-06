@@ -7,8 +7,10 @@ import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
-import static com.googlecode.lanterna.TextCharacter.fromCharacter;
 
 public class ArchitectApp {
     public static void main(String[] args) {
@@ -24,6 +26,9 @@ public class ArchitectApp {
             WindowListenerAdapter listener = new WindowListenerAdapter();
 
             BasicWindow stUp = wm.startupWindow();
+            stUp.setHints(Set.of(
+                    Window.Hint.CENTERED
+            ));
             stUp.addWindowListener(listener);
 
             gui.addWindowAndWait(stUp);
