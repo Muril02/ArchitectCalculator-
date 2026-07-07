@@ -1,6 +1,7 @@
 package almeida.murilo;
 
 import almeida.murilo.Windows.Windows;
+import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.screen.Screen;
@@ -10,7 +11,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
 
 public class ArchitectApp {
     public static void main(String[] args) {
@@ -27,8 +27,10 @@ public class ArchitectApp {
 
             BasicWindow stUp = wm.startupWindow();
             stUp.setHints(Set.of(
-                    Window.Hint.CENTERED
+                    Window.Hint.CENTERED,
+                    Window.Hint.FIT_TERMINAL_WINDOW
             ));
+
             stUp.addWindowListener(listener);
 
             gui.addWindowAndWait(stUp);
