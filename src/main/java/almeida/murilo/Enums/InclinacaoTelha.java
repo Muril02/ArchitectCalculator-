@@ -9,6 +9,19 @@ public enum InclinacaoTelha {
     CONCRETO(30,35),
     ;
 
-    InclinacaoTelha(int min, int max){}
+    private int min;
+    private int max;
 
+    InclinacaoTelha(int min, int max){
+        this.max = max;
+        this.min = min;
+    }
+
+    public int getMin() {
+        return min;
+    }
+
+    public int getMax() {
+        return max;
+    }
 }

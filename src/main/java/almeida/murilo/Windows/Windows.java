@@ -3,22 +3,20 @@ package almeida.murilo.Windows;
 import almeida.murilo.Calculos.Calculos;
 import almeida.murilo.Enums.InclinacaoTelha;
 import com.googlecode.lanterna.SGR;
-import com.googlecode.lanterna.graphics.ThemeDefinition;
+import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.gui2.*;
-import com.googlecode.lanterna.gui2.dialogs.DialogWindow;
 import com.googlecode.lanterna.gui2.dialogs.ListSelectDialog;
 import com.googlecode.lanterna.gui2.dialogs.ListSelectDialogBuilder;
 import com.googlecode.lanterna.gui2.dialogs.MessageDialog;
 import com.googlecode.lanterna.gui2.dialogs.MessageDialogBuilder;
-import com.googlecode.lanterna.gui2.menu.Menu;
 import com.googlecode.lanterna.gui2.menu.MenuItem;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 
+import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.Set;
-import java.util.stream.Stream;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class Windows {
 
@@ -70,10 +68,16 @@ public class Windows {
         Panel ph = new Panel(new GridLayout(2).setBottomMarginSize(1).setTopMarginSize(1).setHorizontalSpacing(5));
         Panel phL = new Panel();
         Panel phR = new Panel();
+
         ListSelectDialog<String> lstInc = new ListSelectDialogBuilder<String>().setTitle("Teste").addListItems("2").build();
         ListSelectDialog<InclinacaoTelha> lstTelhas = new ListSelectDialogBuilder<InclinacaoTelha>().setTitle("Teste").addListItems(
                 InclinacaoTelha.values()
-        ).setCanCancel(true).build();
+        ).setCanCancel(true)
+                .setListBoxSize(new TerminalSize(20, 6))
+                .setExtraWindowHints(Set.of(
+                        Window.Hint.CENTERED
+                ))
+                .build();
 
 
         ph.addComponent(phL);
@@ -89,49 +93,66 @@ public class Windows {
                 return false;
             }
         };
-        MenuItem inc = new MenuItem("Selecione", () ->{
-            InclinacaoTelha teste = lstTelhas.showDialog(gui);
-            System.out.println(teste);
-        });
+
+        InputFilter incFilter = new InputFilter() {
+            @Override
+            public boolean onInput(Interactable interactable, KeyStroke keyStroke) {
+                try{
+                    return !keyStroke.getKeyType().equals(KeyType.Character) || keyStroke.getCharacter().equals('.') || Character.isDigit(keyStroke.getCharacter());
+                }catch(Exception e){
+                    System.out.println("Erro" + e.getMessage());
+                }
+                return false;
+            }
+        };
+
 
         TextBox larg = new TextBox().setInputFilter(textFilter);
+        TextBox inc = new TextBox().setInputFilter(textFilter);
+
+        AtomicReference<InclinacaoTelha> incTelha = new AtomicReference<>(InclinacaoTelha.FIBROCIMENTO);
+
         Label lblResult = new Label("").addStyle(SGR.BOLD);
 
-        phL.addComponent(new Label("Calculadora de telhados!").addStyle(SGR.BOLD));
+        phL.addComponent(new Label("Calculadora de telhados!"));
         phL.addComponent(new EmptySpace());
 
         phL.addComponent(new Label("Selecione a sua telha"));
-        phL.addComponent(new MenuItem("Selecione", ()->{
-
+        phL.addComponent(new MenuItem(incTelha.get().toString(), ()->{
+            incTelha.set((lstTelhas.showDialog(gui)));
         }));
 
-        phL.addComponent(new Label("Selecione a inclinação"));
+        phL.addComponent(new Label("Digite a inclinação"));
         phL.addComponent(inc);
+
         phL.addComponent(new EmptySpace());
         phL.addComponent(new Label("Digite a largura do telhado"));
         phL.addComponent(larg);
 
         phL.addComponent(new EmptySpace());
         phL.addComponent(new MenuItem("Calcular", ()->{
-//            BigDecimal incVal = new BigDecimal(inc.getTextOrDefault("0"));
-//            BigDecimal larVal = new BigDecimal(larg.getTextOrDefault("0"));
-//
-//            try{
-//                if(incVal.compareTo(BigDecimal.ZERO) == 0 || larVal.compareTo(BigDecimal.ZERO) == 0){
-//                    gui.addWindow(errWindow).setActiveWindow(errWindow).updateScreen();
-//                }else {
-//                    lblResult.setText(Calculos.calcTelhados(incVal, larVal).toString());
-//                }
-//            }catch(Exception e){
-//                System.out.println("Erro" + e.getMessage());
-//            }
+            BigDecimal incVal = new BigDecimal(inc.getTextOrDefault("0"));
+            BigDecimal larVal = new BigDecimal(larg.getTextOrDefault("0"));
+            BigDecimal min = new BigDecimal(incTelha.get().getMin());
+            BigDecimal max = new BigDecimal(incTelha.get().getMax());
+
+            try{
+                if(incVal.compareTo(BigDecimal.ZERO) == 0 || larVal.compareTo(BigDecimal.ZERO) == 0){
+                    gui.addWindow(errWindow).setActiveWindow(errWindow).updateScreen();
+                }else if(incVal.compareTo(min) < 0 || incVal.compareTo(max) > 0){
+                    gui.addWindow(errWindow).setActiveWindow(errWindow).updateScreen();
+                }else{
+                    lblResult.setText(Calculos.calcTelhados(incVal, larVal).toString());
+                }
+            }catch(Exception e){
+                System.out.println("Erro" + e.getMessage());
+            }
         }));
 
 //        phR.addComponent(new MenuItem("Teste", ()->{
 //            gui.addWindow(new ListSelectDialogBuilder<String>().setTitle("Teste").addListItem("sasda").build());
 //        }));
 
-        phL.addComponent(new EmptySpace());
         phL.addComponent(new EmptySpace());
         phL.addComponent( new MenuItem("Voltar", ()->{
             this.gui.getActiveWindow().close();
