@@ -4,9 +4,14 @@ import almeida.murilo.Windows.Windows;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.gui2.*;
+import com.googlecode.lanterna.gui2.Window;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
+import com.googlecode.lanterna.terminal.swing.AWTTerminalFontConfiguration;
+import com.googlecode.lanterna.terminal.swing.SwingTerminal;
+import com.googlecode.lanterna.terminal.swing.SwingTerminalFrame;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,13 +20,21 @@ import java.util.Set;
 public class ArchitectApp {
     public static void main(String[] args) {
 
+        Font consolas = new Font("Consolas", Font.PLAIN, 16);
+//        AWTTerminalFontConfiguration terFont = new AWTTerminalFontConfiguration(false, ,  consolas);
+//        DefaultTerminalFactory facTer = new DefaultTerminalFactory().setTerminalEmulatorFontConfiguration();
+
         try(Screen screen = new DefaultTerminalFactory().createScreen()) {
-            TextGraphics textgh = screen.newTextGraphics();
+
+
             screen.startScreen();
+
+
 
             MultiWindowTextGUI gui = new MultiWindowTextGUI(screen);
 
             Windows wm = new Windows(gui);
+
 
             WindowListenerAdapter listener = new WindowListenerAdapter();
 
@@ -39,6 +52,5 @@ public class ArchitectApp {
         } catch (IOException e) {
             System.out.println("Error: " + e.getMessage());
         }
-
     }
 }

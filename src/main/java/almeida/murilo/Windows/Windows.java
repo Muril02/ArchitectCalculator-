@@ -65,11 +65,10 @@ public class Windows {
                 Window.Hint.CENTERED
         ));
 
-        Panel ph = new Panel(new GridLayout(2).setBottomMarginSize(1).setTopMarginSize(1).setHorizontalSpacing(5));
+        Panel ph = new Panel(new GridLayout(2).setBottomMarginSize(1).setTopMarginSize(1).setHorizontalSpacing(6));
         Panel phL = new Panel();
         Panel phR = new Panel();
 
-        ListSelectDialog<String> lstInc = new ListSelectDialogBuilder<String>().setTitle("Teste").addListItems("2").build();
         ListSelectDialog<InclinacaoTelha> lstTelhas = new ListSelectDialogBuilder<InclinacaoTelha>().setTitle("Teste").addListItems(
                 InclinacaoTelha.values()
         ).setCanCancel(true)
@@ -94,33 +93,29 @@ public class Windows {
             }
         };
 
-        InputFilter incFilter = new InputFilter() {
-            @Override
-            public boolean onInput(Interactable interactable, KeyStroke keyStroke) {
-                try{
-                    return !keyStroke.getKeyType().equals(KeyType.Character) || keyStroke.getCharacter().equals('.') || Character.isDigit(keyStroke.getCharacter());
-                }catch(Exception e){
-                    System.out.println("Erro" + e.getMessage());
-                }
-                return false;
-            }
-        };
-
-
         TextBox larg = new TextBox().setInputFilter(textFilter);
         TextBox inc = new TextBox().setInputFilter(textFilter);
 
-        AtomicReference<InclinacaoTelha> incTelha = new AtomicReference<>(InclinacaoTelha.FIBROCIMENTO);
+        AtomicReference<InclinacaoTelha> incTelha = new AtomicReference<>();
 
         Label lblResult = new Label("").addStyle(SGR.BOLD);
+        Label lblTelha = new Label("").addStyle(SGR.ITALIC);
+        EmptySpace eptSp = new EmptySpace();
 
         phL.addComponent(new Label("Calculadora de telhados!"));
         phL.addComponent(new EmptySpace());
 
         phL.addComponent(new Label("Selecione a sua telha"));
-        phL.addComponent(new MenuItem(incTelha.get().toString(), ()->{
+        phL.addComponent(new MenuItem("Selecionar", ()->{
             incTelha.set((lstTelhas.showDialog(gui)));
+            if(incTelha.get() != null){
+                lblTelha.setText("Selecionado " + incTelha.get().toString() + "\ninclinação de " + incTelha.get().getMin() + " até " + incTelha.get().getMax());
+                phL.addComponent(eptSp);
+            }
         }));
+
+        phL.addComponent(lblTelha);
+
 
         phL.addComponent(new Label("Digite a inclinação"));
         phL.addComponent(inc);
@@ -143,6 +138,118 @@ public class Windows {
                     gui.addWindow(errWindow).setActiveWindow(errWindow).updateScreen();
                 }else{
                     lblResult.setText(Calculos.calcTelhados(incVal, larVal).toString());
+                    inc.setText("");
+                    larg.setText("");
+                }
+            }catch(Exception e){
+                System.out.println("Erro" + e.getMessage());
+            }
+        }));
+
+//        phR.addComponent(new MenuItem("Teste", ()->{
+//            gui.addWindow(new ListSelectDialogBuilder<String>().setTitle("Teste").addListItem("sasda").build());
+//        }));
+
+        phL.addComponent(new EmptySpace());
+        phL.addComponent( new MenuItem("Voltar", ()->{
+            this.gui.getActiveWindow().close();
+            this.gui.getWindows().stream().findFirst().ifPresent(w -> w.setVisible(true));
+        }));
+
+        phR.addComponent(new Label("Resultado"));
+        phR.addComponent(lblResult);
+
+        window.setComponent(ph);
+        return window;
+    }
+
+    public BasicWindow calcDeEscadas(MultiWindowTextGUI gui){
+        BasicWindow window = new BasicWindow();
+
+        window.setHints(Set.of(
+                Window.Hint.CENTERED
+        ));
+
+        MessageDialog errWindow = new MessageDialogBuilder().setTitle("Erro").setText("Valores inválidos!").build();
+        errWindow.setHints(Set.of(
+                Window.Hint.MENU_POPUP,
+                Window.Hint.CENTERED
+        ));
+
+        Panel ph = new Panel(new GridLayout(2).setBottomMarginSize(1).setTopMarginSize(1).setHorizontalSpacing(6));
+        Panel phL = new Panel();
+        Panel phR = new Panel();
+
+        ListSelectDialog<InclinacaoTelha> lstTelhas = new ListSelectDialogBuilder<InclinacaoTelha>().setTitle("Teste").addListItems(
+                        InclinacaoTelha.values()
+                ).setCanCancel(true)
+                .setListBoxSize(new TerminalSize(20, 6))
+                .setExtraWindowHints(Set.of(
+                        Window.Hint.CENTERED
+                ))
+                .build();
+
+
+        ph.addComponent(phL);
+        ph.addComponent(phR);
+        InputFilter textFilter = new InputFilter() {
+            @Override
+            public boolean onInput(Interactable interactable, KeyStroke keyStroke) {
+                try{
+                    return !keyStroke.getKeyType().equals(KeyType.Character) || keyStroke.getCharacter().equals('.') || Character.isDigit(keyStroke.getCharacter());
+                }catch(Exception e){
+                    System.out.println("Erro" + e.getMessage());
+                }
+                return false;
+            }
+        };
+
+        TextBox larg = new TextBox().setInputFilter(textFilter);
+        TextBox inc = new TextBox().setInputFilter(textFilter);
+
+        AtomicReference<InclinacaoTelha> incTelha = new AtomicReference<>();
+
+        Label lblResult = new Label("").addStyle(SGR.BOLD);
+        Label lblTelha = new Label("").addStyle(SGR.ITALIC);
+
+        phL.addComponent(new Label("Calculadora de telhados!"));
+        phL.addComponent(new EmptySpace());
+
+        phL.addComponent(new Label("Selecione a sua telha"));
+        phL.addComponent(new MenuItem("Selecionar", ()->{
+            incTelha.set((lstTelhas.showDialog(gui)));
+            if(incTelha.get() != null){
+                lblTelha.setText("Selecionado " + incTelha.get().toString() + "\ninclinação de " + incTelha.get().getMin() + " até " + incTelha.get().getMax());
+            }
+        }));
+
+        phL.addComponent(lblTelha);
+        phL.addComponent(new EmptySpace());
+
+        phL.addComponent(new Label("Digite a inclinação"));
+        phL.addComponent(inc);
+
+        phL.addComponent(new EmptySpace());
+        phL.addComponent(new Label("Digite a largura do telhado"));
+        phL.addComponent(larg);
+
+        phL.addComponent(new EmptySpace());
+        phL.addComponent(new MenuItem("Calcular", ()->{
+            BigDecimal incVal = new BigDecimal(inc.getTextOrDefault("0"));
+            BigDecimal larVal = new BigDecimal(larg.getTextOrDefault("0"));
+            BigDecimal min = new BigDecimal(incTelha.get().getMin());
+            BigDecimal max = new BigDecimal(incTelha.get().getMax());
+
+            try{
+                if(incVal.compareTo(BigDecimal.ZERO) == 0 || larVal.compareTo(BigDecimal.ZERO) == 0){
+                    gui.addWindow(errWindow).setActiveWindow(errWindow).updateScreen();
+                }else if(incVal.compareTo(min) < 0 || incVal.compareTo(max) > 0){
+                    gui.addWindow(errWindow).setActiveWindow(errWindow).updateScreen();
+                }else{
+                    lblResult.setText(Calculos.calcTelhados(incVal, larVal).toString());
+                    inc.setText("");
+
+                    larg.setText("");
                 }
             }catch(Exception e){
                 System.out.println("Erro" + e.getMessage());
