@@ -7,6 +7,8 @@ import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.Window;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
+import com.googlecode.lanterna.terminal.Terminal;
+import com.googlecode.lanterna.terminal.TerminalFactory;
 import com.googlecode.lanterna.terminal.swing.AWTTerminalFontConfiguration;
 import com.googlecode.lanterna.terminal.swing.SwingTerminal;
 import com.googlecode.lanterna.terminal.swing.SwingTerminalFrame;
@@ -20,15 +22,9 @@ import java.util.Set;
 public class ArchitectApp {
     public static void main(String[] args) {
 
-        Font consolas = new Font("Consolas", Font.PLAIN, 16);
-//        AWTTerminalFontConfiguration terFont = new AWTTerminalFontConfiguration(false, ,  consolas);
-//        DefaultTerminalFactory facTer = new DefaultTerminalFactory().setTerminalEmulatorFontConfiguration();
-
         try(Screen screen = new DefaultTerminalFactory().createScreen()) {
 
-
             screen.startScreen();
-
 
 
             MultiWindowTextGUI gui = new MultiWindowTextGUI(screen);
@@ -47,9 +43,8 @@ public class ArchitectApp {
             stUp.addWindowListener(listener);
 
             gui.addWindowAndWait(stUp);
-            gui.updateScreen();
 
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
     }
