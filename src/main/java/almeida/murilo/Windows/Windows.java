@@ -36,9 +36,9 @@ public class Windows {
         ph.addComponent(1, new EmptySpace());
         ph.addComponent(new MenuItem("1 - Calcular telhado", () -> {
             try{
-                BasicWindow w = calcTelhadoWindow(this.gui);
+                BasicWindow win = calcTelhadoWindow(this.gui);
                 this.gui.getActiveWindow().setVisible(false);
-                this.gui.addWindow(w).updateScreen();
+                this.gui.addWindow(win).updateScreen();
             } catch (Exception e) {
                 System.out.println("Erro" + e.getMessage());
             }
@@ -54,10 +54,6 @@ public class Windows {
 
     public BasicWindow calcTelhadoWindow(MultiWindowTextGUI gui){
         BasicWindow window = new BasicWindow();
-
-        window.setHints(Set.of(
-                Window.Hint.CENTERED
-        ));
 
         MessageDialog errWindow = new MessageDialogBuilder().setTitle("Erro").setText("Valores inválidos!").build();
         errWindow.setHints(Set.of(
@@ -126,29 +122,35 @@ public class Windows {
 
         phL.addComponent(new EmptySpace());
         phL.addComponent(new MenuItem("Calcular", ()->{
+
             BigDecimal incVal = new BigDecimal(inc.getTextOrDefault("0"));
             BigDecimal larVal = new BigDecimal(larg.getTextOrDefault("0"));
-            BigDecimal min = new BigDecimal(incTelha.get().getMin());
-            BigDecimal max = new BigDecimal(incTelha.get().getMax());
 
-            try{
-                if(incVal.compareTo(BigDecimal.ZERO) == 0 || larVal.compareTo(BigDecimal.ZERO) == 0){
+            if(incTelha.get() == null){
+                try{
                     gui.addWindow(errWindow).setActiveWindow(errWindow).updateScreen();
-                }else if(incVal.compareTo(min) < 0 || incVal.compareTo(max) > 0){
-                    gui.addWindow(errWindow).setActiveWindow(errWindow).updateScreen();
-                }else{
-                    lblResult.setText(Calculos.calcTelhados(incVal, larVal).toString());
-                    inc.setText("");
-                    larg.setText("");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
-            }catch(Exception e){
-                System.out.println("Erro" + e.getMessage());
+            }else {
+                BigDecimal min = new BigDecimal(incTelha.get().getMin());
+                BigDecimal max = new BigDecimal(incTelha.get().getMax());
+
+                try{
+                    if(incVal.compareTo(BigDecimal.ZERO) == 0 || larVal.compareTo(BigDecimal.ZERO) == 0){
+                        gui.addWindow(errWindow).setActiveWindow(errWindow).updateScreen();
+                    }else if(incVal.compareTo(min) < 0 || incVal.compareTo(max) > 0){
+                        gui.addWindow(errWindow).setActiveWindow(errWindow).updateScreen();
+                    }else{
+                        lblResult.setText(Calculos.calcTelhados(incVal, larVal).toString());
+                        inc.setText("");
+                        larg.setText("");
+                    }
+                }catch(Exception e){
+                    System.out.println("Erro" + e.getMessage());
+                }
             }
         }));
-
-//        phR.addComponent(new MenuItem("Teste", ()->{
-//            gui.addWindow(new ListSelectDialogBuilder<String>().setTitle("Teste").addListItem("sasda").build());
-//        }));
 
         phL.addComponent(new EmptySpace());
         phL.addComponent( new MenuItem("Voltar", ()->{
