@@ -2,6 +2,8 @@ package almeida.murilo;
 
 import almeida.murilo.Windows.Windows;
 import com.googlecode.lanterna.TerminalSize;
+import com.googlecode.lanterna.TextColor;
+import com.googlecode.lanterna.graphics.SimpleTheme;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.gui2.Window;
@@ -20,18 +22,25 @@ import java.util.Set;
 public class ArchitectApp {
     public static void main(String[] args) {
 
-        Font consolas = new Font("Consolas", Font.PLAIN, 16);
-//        AWTTerminalFontConfiguration terFont = new AWTTerminalFontConfiguration(false, ,  consolas);
-//        DefaultTerminalFactory facTer = new DefaultTerminalFactory().setTerminalEmulatorFontConfiguration();
-
         try(Screen screen = new DefaultTerminalFactory().createScreen()) {
 
 
             screen.startScreen();
 
-
+            SimpleTheme tema1 = SimpleTheme.makeTheme(
+                    true,
+                    TextColor.ANSI.BLACK, // baseForeground
+                    TextColor.ANSI.WHITE, // baseBackground
+                    TextColor.ANSI.BLACK, // editForeground
+                    TextColor.ANSI.WHITE, // editBackground
+                    TextColor.ANSI.BLACK, // selecForeground
+                    TextColor.ANSI.WHITE, // selecBackground
+                    TextColor.ANSI.BLUE // guiBackground
+            );
 
             MultiWindowTextGUI gui = new MultiWindowTextGUI(screen);
+
+//            gui.setTheme(tema1);
 
             Windows wm = new Windows(gui);
 
