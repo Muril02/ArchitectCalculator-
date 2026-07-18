@@ -42,17 +42,28 @@ public class ArchitectApp {
             MultiWindowTextGUI gui = new MultiWindowTextGUI(screen);
 //            gui.setTheme(test);
 
-            Windows wm = new Windows(gui);
-
             WindowListenerAdapter listener = new WindowListenerAdapter(){
                 @Override
                 public void onUnhandledInput(Window basePane, KeyStroke keyStroke, AtomicBoolean atomicBoolean){
                     if(keyStroke.getKeyType().equals(KeyType.Escape)){
                         gui.getActiveWindow().close();
                         atomicBoolean.set(true);
+                        System.out.println(keyStroke.getKeyType().toString());
+                    }
+                }
+
+                @Override
+                public void onInput(Window basePane, KeyStroke keyStroke, AtomicBoolean deliverEvent) {
+                    if(keyStroke.getKeyType().equals(KeyType.Escape)){
+                        gui.getActiveWindow().close();
+                        deliverEvent.set(true);
+                        System.out.println(keyStroke.getKeyType().toString());
                     }
                 }
             };
+
+
+            Windows wm = new Windows(gui);
 
             BasicWindow stUp = wm.startupWindow();
             stUp.setHints(Set.of(
@@ -61,8 +72,20 @@ public class ArchitectApp {
 
             stUp.addWindowListener(listener);
 
-            System.out.println();
+            gui.addListener((T,K ) -> {
+                switch(K.getKeyType()){
+                    case KeyType.Escape:
+                        gui.getActiveWindow().close();
+                        gui.getWindows().stream().findFirst().ifPresent(w -> w.setVisible(true));
+                        return true;
+                    case K
+                }
 
+                if(K.getKeyType().equals(KeyType.Escape)){
+
+                }
+                return false;
+            });
 
             gui.addWindowAndWait(stUp);
 

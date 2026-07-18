@@ -54,6 +54,9 @@ public class Windows {
 
     public BasicWindow calcTelhadoWindow(MultiWindowTextGUI gui){
         BasicWindow window = new BasicWindow();
+        window.setHints(Set.of(
+                Window.Hint.CENTERED
+        ));
 
         MessageDialog errWindow = new MessageDialogBuilder().setTitle("Erro").setText("Valores inválidos!").build();
         errWindow.setHints(Set.of(
@@ -111,7 +114,6 @@ public class Windows {
         }));
 
         phL.addComponent(lblTelha);
-
 
         phL.addComponent(new Label("Digite a inclinação"));
         phL.addComponent(inc);
