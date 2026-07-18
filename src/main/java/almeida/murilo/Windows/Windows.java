@@ -21,9 +21,11 @@ import java.util.concurrent.atomic.AtomicReference;
 public class Windows {
 
     private final MultiWindowTextGUI gui;
+    private final WindowListenerAdapter windowListener;
 
-    public Windows(MultiWindowTextGUI GUI){
+    public Windows(MultiWindowTextGUI GUI, WindowListenerAdapter WindowListener) {
         this.gui = GUI;
+        this.windowListener = WindowListener;
     }
 
     public BasicWindow startupWindow(){
@@ -36,14 +38,23 @@ public class Windows {
         ph.addComponent(1, new EmptySpace());
         ph.addComponent(new MenuItem("1 - Calcular telhado", () -> {
             try{
-                BasicWindow win = calcTelhadoWindow(this.gui);
+                BasicWindow win = calcTelhadoWindow();
                 this.gui.getActiveWindow().setVisible(false);
                 this.gui.addWindow(win).updateScreen();
             } catch (Exception e) {
                 System.out.println("Erro" + e.getMessage());
             }
         }));
-        ph.addComponent(new MenuItem("2 - Em construção"));
+
+        ph.addComponent(new MenuItem("2 - Calcular escada", () -> {
+            try{
+                BasicWindow win = calcDeEscadas();
+                this.gui.getActiveWindow().setVisible(false);
+                this.gui.addWindow(win).updateScreen();
+            } catch (Exception e) {
+                System.out.println("Erro" + e.getMessage());
+            }
+        }));
         ph.addComponent(new MenuItem("3 - Em construção"));
         ph.addComponent(new MenuItem("4 - Em construção"));
 
@@ -52,8 +63,9 @@ public class Windows {
     }
 
 
-    public BasicWindow calcTelhadoWindow(MultiWindowTextGUI gui){
+    public BasicWindow calcTelhadoWindow(){
         BasicWindow window = new BasicWindow();
+        window.addWindowListener(this.windowListener);
         window.setHints(Set.of(
                 Window.Hint.CENTERED
         ));
@@ -106,7 +118,7 @@ public class Windows {
 
         phL.addComponent(new Label("Selecione a sua telha"));
         phL.addComponent(new MenuItem("Selecionar", ()->{
-            incTelha.set((lstTelhas.showDialog(gui)));
+            incTelha.set((lstTelhas.showDialog(this.gui)));
             if(incTelha.get() != null){
                 lblTelha.setText("Selecionado " + incTelha.get().toString() + "\ninclinação de " + incTelha.get().getMin() + " até " + incTelha.get().getMax());
                 phL.addComponent(eptSp);
@@ -130,7 +142,7 @@ public class Windows {
 
             if(incTelha.get() == null){
                 try{
-                    gui.addWindow(errWindow).setActiveWindow(errWindow).updateScreen();
+                    this.gui.addWindow(errWindow).setActiveWindow(errWindow).updateScreen();
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -140,9 +152,9 @@ public class Windows {
 
                 try{
                     if(incVal.compareTo(BigDecimal.ZERO) == 0 || larVal.compareTo(BigDecimal.ZERO) == 0){
-                        gui.addWindow(errWindow).setActiveWindow(errWindow).updateScreen();
+                        this.gui.addWindow(errWindow).setActiveWindow(errWindow).updateScreen();
                     }else if(incVal.compareTo(min) < 0 || incVal.compareTo(max) > 0){
-                        gui.addWindow(errWindow).setActiveWindow(errWindow).updateScreen();
+                        this.gui.addWindow(errWindow).setActiveWindow(errWindow).updateScreen();
                     }else{
                         lblResult.setText(Calculos.calcTelhados(incVal, larVal).toString());
                         inc.setText("");
@@ -167,12 +179,13 @@ public class Windows {
         return window;
     }
 
-    public BasicWindow calcDeEscadas(MultiWindowTextGUI gui){
+    public BasicWindow calcDeEscadas(){
         BasicWindow window = new BasicWindow();
 
         window.setHints(Set.of(
                 Window.Hint.CENTERED
         ));
+        window.addWindowListener(this.windowListener);
 
         MessageDialog errWindow = new MessageDialogBuilder().setTitle("Erro").setText("Valores inválidos!").build();
         errWindow.setHints(Set.of(
@@ -216,12 +229,12 @@ public class Windows {
         Label lblResult = new Label("").addStyle(SGR.BOLD);
         Label lblTelha = new Label("").addStyle(SGR.ITALIC);
 
-        phL.addComponent(new Label("Calculadora de telhados!"));
+        phL.addComponent(new Label("Calculadora de escadas!"));
         phL.addComponent(new EmptySpace());
 
         phL.addComponent(new Label("Selecione a sua telha"));
         phL.addComponent(new MenuItem("Selecionar", ()->{
-            incTelha.set((lstTelhas.showDialog(gui)));
+            incTelha.set((lstTelhas.showDialog(this.gui)));
             if(incTelha.get() != null){
                 lblTelha.setText("Selecionado " + incTelha.get().toString() + "\ninclinação de " + incTelha.get().getMin() + " até " + incTelha.get().getMax());
             }
@@ -246,9 +259,9 @@ public class Windows {
 
             try{
                 if(incVal.compareTo(BigDecimal.ZERO) == 0 || larVal.compareTo(BigDecimal.ZERO) == 0){
-                    gui.addWindow(errWindow).setActiveWindow(errWindow).updateScreen();
+                    this.gui.addWindow(errWindow).setActiveWindow(errWindow).updateScreen();
                 }else if(incVal.compareTo(min) < 0 || incVal.compareTo(max) > 0){
-                    gui.addWindow(errWindow).setActiveWindow(errWindow).updateScreen();
+                    this.gui.addWindow(errWindow).setActiveWindow(errWindow).updateScreen();
                 }else{
                     lblResult.setText(Calculos.calcTelhados(incVal, larVal).toString());
                     inc.setText("");
