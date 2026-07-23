@@ -28,6 +28,7 @@ public class Windows {
         this.windowListener = WindowListener;
     }
 
+
     public BasicWindow startupWindow(){
         BasicWindow window = new BasicWindow();
         Panel ph = new Panel();

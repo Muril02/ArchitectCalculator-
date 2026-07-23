@@ -10,23 +10,35 @@ import com.googlecode.lanterna.gui2.dialogs.MessageDialogBuilder;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.screen.Screen;
+import com.googlecode.lanterna.screen.TerminalScreen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
-import com.googlecode.lanterna.terminal.swing.TerminalEmulatorColorConfiguration;
-import com.googlecode.lanterna.terminal.swing.TerminalEmulatorDeviceConfiguration;
-import com.googlecode.lanterna.terminal.swing.TerminalEmulatorPalette;
+import com.googlecode.lanterna.terminal.Terminal;
+import com.googlecode.lanterna.terminal.swing.*;
 
+import java.io.IOException;
 import java.security.Key;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ArchitectApp {
+
+    private static Terminal createTerminal(DefaultTerminalFactory factory) throws IOException{
+
+        Terminal term = factory.createTerminal();
+        if(term != null){
+            return term;
+        }else {
+            return factory.setPreferTerminalEmulator(true).createTerminal();
+        }
+    }
+
     public static void main(String[] args) {
 
         DefaultTerminalFactory facTer = new DefaultTerminalFactory()
                 .setTerminalEmulatorColorConfiguration(TerminalEmulatorColorConfiguration.newInstance(TerminalEmulatorPalette.STANDARD_VGA))
                 .setTerminalEmulatorDeviceConfiguration(new TerminalEmulatorDeviceConfiguration(2, 500, TerminalEmulatorDeviceConfiguration.CursorStyle.VERTICAL_BAR, TextColor.ANSI.WHITE_BRIGHT, true));
 
-        try(Screen screen = facTer.createScreen()) {
+        try(Screen screen = new TerminalScreen(createTerminal(facTer))) {
             screen.startScreen();
 
             MultiWindowTextGUI gui = new MultiWindowTextGUI(screen);
@@ -36,6 +48,7 @@ public class ArchitectApp {
                 public void onUnhandledInput(Window basePane, KeyStroke keyStroke, AtomicBoolean atomicBoolean){
                     if(keyStroke.getKeyType().equals(KeyType.Escape)){
                         gui.getActiveWindow().close();
+                        gui.getWindows().stream().findFirst().ifPresent(w -> w.setVisible(true));
                         atomicBoolean.set(true);
                         System.out.println(keyStroke.getCharacter());
                     }else if(keyStroke.isAltDown() && keyStroke.getCharacter().equals('g')){
